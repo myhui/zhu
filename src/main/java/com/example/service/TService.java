@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.dao.ITdao;
+import com.example.model.TextType;
 import com.example.model.Tmodel;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -8,6 +9,7 @@ import org.htmlparser.Parser;
 import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.HasParentFilter;
 import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.nodes.TagNode;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
@@ -97,43 +99,105 @@ public class TService {
         });
     }
 
-    public int panduan(Node node){
+    private static int nums = 0;
+
+    public int t2(Node node){
+        //
         int type = 0;
 
-        String cText = node.toPlainTextString().trim();
+        //获取子节点
+        NodeList nodes = node.getChildren();
 
-        if(cText.startsWith("设计方：")){
-            System.out.println("is 设计方。");
-        }else if(cText.startsWith("位置：")){
-            System.out.println("is 位置。");
-        }else if(cText.startsWith("分类：")){
-            System.out.println("is 分类。");
-        }else if(cText.startsWith("内容：")){
-            System.out.println("is 内容。");
-        }else if(cText.startsWith("摄影师：")){
-            System.out.println("is 摄影师。");
-        }else if(cText.startsWith("标签：")){
-            System.out.println("is 标签。");
-        }else if(cText.length()> 100){
-            System.out.println(" is Content");
+        if(nodes!=null) {
+            for (int i = 0; i < nodes.size(); i++) {
+                Node zNode = (Node) nodes.elementAt(i);
+
+                String zText = zNode.getText().trim();
+
+                if(zText.startsWith("img")) {
+
+                    TagNode tagNode = new TagNode();
+                    String toHtml = zNode.toHtml();
+                    tagNode.setText(toHtml);
+
+                    if ("lazy".equals(tagNode.getAttribute("class"))) {
+                        nums++;
+                        System.out.println("is imgs  nums :"+nums);
+                        System.out.println("data-original:" + tagNode.getAttribute("data-original"));
+                        System.out.println("alt :" + tagNode.getAttribute("alt"));
+                        System.out.println("title:" + tagNode.getAttribute("title"));
+                        System.out.println("width:" + tagNode.getAttribute("width"));
+
+                        return type;
+                    } else if (tagNode!=null) {
+                        nums++;
+                        System.out.println("is big img");
+                        System.out.println("src:" + tagNode.getAttribute("src"));
+                        System.out.println("alt :" + tagNode.getAttribute("alt"));
+                        System.out.println("title:" + tagNode.getAttribute("title"));
+
+                        return type;
+                    }
+                }
+
+            }
         }
-
-        Node zNode = node.getFirstChild();
-        String zText = zNode.getText();
-
-        HasAttributeFilter filter = new HasAttributeFilter("class");
-        if(zText.startsWith("img")&& ){
-
-        }
-
-
-
 
         return type;
     }
 
-    public String hp(String content) {
+    public TextType t1(String cText){
 
+        TextType t=null;
+
+        if(cText.startsWith("设计方：")){
+            System.out.println("is 设计方。");
+            t = TextType.SJF;
+            t.setContext(cText.replace("设计方：",""));
+
+        }else if(cText.startsWith("位置：")){
+            System.out.println("is 位置。");
+            t = TextType.WEIZHI;
+            t.setContext(cText.replace("位置：",""));
+
+        }else if(cText.startsWith("分类：")){
+            System.out.println("is 分类。");
+            t = TextType.FENLIE;
+            t.setContext(cText.replace("分类：",""));
+
+        }else if(cText.startsWith("内容：")){
+            System.out.println("is 内容。");
+            t = TextType.NEIRONG;
+            t.setContext(cText.replace("内容：",""));
+
+        }else if(cText.startsWith("摄影师：")){
+            System.out.println("is 摄影师。");
+            t = TextType.SHEYINSHI;
+            t.setContext(cText.replace("摄影师：",""));
+
+        }else if(cText.startsWith("标签：")){
+            System.out.println("is 标签。");
+            t = TextType.BIAOQIAN;
+            t.setContext(cText.replace("标签：",""));
+
+        }else if(cText.length()> 100){
+            System.out.println(" is Content");
+            t = TextType.MIAOSHU;
+            t.setContext(cText);
+
+        }else if(cText.startsWith("图片：")){
+            System.out.println("is picture");
+            t = TextType.TUPIAN;
+            t.setContext(cText.replace("图片：","").replace("张",""));
+
+        }else {
+            System.out.print("没有设置    "+cText);
+        }
+
+        return t;
+    }
+
+    public String hp(String content) {
         try{
             Parser parser = new Parser(content);
             NodeFilter filter = new TagNameFilter("p");
@@ -145,24 +209,24 @@ public class TService {
 
                     Node p = textnode.getParent();
                     if(p==null){
-                        System.out.println("getText:"+textnode.toPlainTextString().trim());
-                        panduan(textnode);
+
+                        String cText = textnode.toPlainTextString().trim();
+                        if(!"".equals(cText)&&i==0){
+
+                        }
+
+                        if(!"".equals(cText)){
+                            t1(cText);
+                        }else {
+                            t2(textnode);
+                        }
+
                         System.out.println("=================================================");
                     }
 
                 }
             }
 
-//            for (Node node:nodes ) {
-//                Node node = i.nextNode();
-//                System.out.println("getText:"+node.getText());
-//                System.out.println("getPlainText:"+node.toPlainTextString());
-//                System.out.println("toHtml:"+node.toHtml());
-//                System.out.println("toHtml(true):"+node.toHtml(true));
-//                System.out.println("toHtml(false):"+node.toHtml(false));
-//                System.out.println("toString:"+node.toString());
-//                System.out.println("=================================================");
-//            }
         }catch (ParserException pe){
             System.out.println("Exception : "+ pe);
         }
