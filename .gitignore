@@ -6,3 +6,5 @@
 /mvnw
 /mvnw.cmd
 /target
+/.gitignore
+/src/main/resources/application.properties
