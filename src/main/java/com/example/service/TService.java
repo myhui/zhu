@@ -156,7 +156,7 @@ public class TService {
 
 
 
-    private final int pageSize = 1;
+    private final int pageSize = 600;
     public List<Tmodel> getListByPage(int page){
         int start = (page-1)*pageSize;
         String sql = "SELECT *   FROM zhu LIMIT "+start+","+pageSize;
@@ -262,42 +262,42 @@ public class TService {
         TextType t=null;
 
         if(cText.startsWith("设计方：")){
-            System.out.println("is 设计方。");
+//            System.out.println("is 设计方。");
             t = TextType.SJF;
             t.setContext(cText.replace("设计方：",""));
 
         }else if(cText.startsWith("位置：")){
-            System.out.println("is 位置。");
+//            System.out.println("is 位置。");
             t = TextType.WEIZHI;
             t.setContext(cText.replace("位置：",""));
 
         }else if(cText.startsWith("分类：")){
-            System.out.println("is 分类。");
+//            System.out.println("is 分类。");
             t = TextType.FENLIE;
             t.setContext(cText.replace("分类：",""));
 
         }else if(cText.startsWith("内容：")){
-            System.out.println("is 内容。");
+//            System.out.println("is 内容。");
             t = TextType.NEIRONG;
             t.setContext(cText.replace("内容：",""));
 
         }else if(cText.startsWith("摄影师：")){
-            System.out.println("is 摄影师。");
+//            System.out.println("is 摄影师。");
             t = TextType.SHEYINSHI;
             t.setContext(cText.replace("摄影师：",""));
 
         }else if(cText.startsWith("标签：")){
-            System.out.println("is 标签。");
+//            System.out.println("is 标签。");
             t = TextType.BIAOQIAN;
             t.setContext(cText.replace("标签：",""));
 
-        }else if(cText.length()> 100){
-            System.out.println(" is Content");
+        }else if(cText.length()> 50){
+//            System.out.println(" is Content");
             t = TextType.MIAOSHU;
             t.setContext(cText);
 
         }else if(cText.startsWith("图片：")){
-            System.out.println("is picture");
+//            System.out.println("is picture");
             t = TextType.TUPIAN;
             t.setContext(cText.replace("图片：","").replace("张",""));
 
@@ -310,6 +310,10 @@ public class TService {
 
     public String hp(String content,String title, long id) {
         try{
+
+            if(StringUtils.isEmpty(content)){
+                System.out.println("=================content is null="+title+"=="+id);
+            }
             Parser parser = new Parser(content);
             NodeFilter filter = new TagNameFilter("p");
             NodeList nodes =  parser.extractAllNodesThatMatch(filter);
@@ -383,7 +387,6 @@ public class TService {
                             }
                         }
 
-                        System.out.println("=====");
                     }
 
                 }
@@ -397,6 +400,8 @@ public class TService {
             System.out.println("Exception : "+ pe);
         }
         catch( Exception e ) {
+
+            // 133730 , 133918  nullPointer
             System.out.println( "Exception:"+e );
         }
 

@@ -22,16 +22,15 @@ public class ShowContl {
 
     @RequestMapping("/list")
     @ResponseBody
-    public String getScoreList(){
-        List<Tmodel> tt=tService.getListByPage(2);
+    public String getList(){
+        List<Tmodel> tt=tService.getListByPage(1);
         for(Tmodel t: tt){
             long id = tService.getTid(t.getT7());
             tService.hp(t.getT5(),t.getT2(),id);
-            return t.getT5();
         }
 
 //        return tt;
-        return "";
+        return "success";
     }
 
 
