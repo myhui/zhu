@@ -25,7 +25,8 @@ public class ShowContl {
     public String getScoreList(){
         List<Tmodel> tt=tService.getListByPage(2);
         for(Tmodel t: tt){
-            tService.hp(t.getT5());
+            long id = tService.getTid(t.getT7());
+            tService.hp(t.getT5(),t.getT2(),id);
             return t.getT5();
         }
 

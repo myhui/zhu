@@ -20,14 +20,14 @@ public enum TextType {
     FTU(11,"",null);
 
 
-    TextType(int type, String context, Map<String,String> m){
+    TextType(int type, String context, Map<String,Object> m){
         this.type = type;
         this.m = m;
         this.context = context;
     }
     private int type;
     private String context;
-    private Map<String,String> m;
+    private Map<String,Object> m;
 
     public int getType() {
         return type;
@@ -45,11 +45,13 @@ public enum TextType {
         this.context = context;
     }
 
-    public Map<String, String> getM() {
+    public Map<String, Object> getM() {
         return m;
     }
 
-    public void setM(Map<String, String> m) {
+    public void setM(Map<String, Object> m) {
         this.m = m;
     }
+
+
 }

@@ -1,8 +1,10 @@
 package com.example.service;
 
 import com.example.dao.ITdao;
+import com.example.model.TMain;
 import com.example.model.TextType;
 import com.example.model.Tmodel;
+import com.example.model.Ttu;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -16,17 +18,22 @@ import org.htmlparser.util.ParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.sql.Blob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2016/5/25.
@@ -57,6 +64,97 @@ public class TService {
 
         });
     }
+
+
+    public long insertTMain(TMain main){
+        //INSERT INTO zhulong_t.t_mian (id, t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (1, 1, '1', 1, '1', 1, 1, '1', '1', '1', '1', 1, '1', '1', '1', '1', 1, '1');
+        String sql = "INSERT INTO zhulong_t.t_mian (t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        long autoIncId = 0;
+
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                        ps.setLong(1, main.gettId());
+                        ps.setString(2, main.getTitle());
+                        ps.setInt(3, main.getHot());
+                        ps.setString(4, main.getFbsj());
+                        ps.setLong(5, main.getLiulan());
+                        ps.setLong(6, main.getDownloadnum());
+                        ps.setString(7, main.getSjf());
+                        ps.setString(8, main.getWeizhi());
+                        ps.setString(9, main.getFenlie());
+                        ps.setString(10, main.getNeirong());
+                        ps.setString(11, main.getTupiannum());
+                        ps.setString(12, main.getShejishi());
+                        ps.setString(13, main.getBiaoqian());
+                        ps.setString(14, main.getMiaoshu());
+                        ps.setString(15, main.getTu());
+                        ps.setLong(16, main.getTuId());
+                        ps.setString(17, main.getTudesc());
+
+                        return ps;
+                    }
+                },keyHolder
+        );
+
+        autoIncId = keyHolder.getKey().intValue();
+
+        return autoIncId;
+    }
+
+    public long insertAndUpdateTMain(TMain mian){
+
+
+        //// TODO: 16/5/25 插入更新
+        return 0;
+    }
+
+
+    public long insertAndUpdateTtu(Ttu tu){
+        //// TODO: 16/5/25 插入更新
+        return 0;
+    }
+
+
+
+    public long insertTtu(Ttu tu){
+        //INSERT INTO zhulong_t.t_mian (id, t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (1, 1, '1', 1, '1', 1, 1, '1', '1', '1', '1', 1, '1', '1', '1', '1', 1, '1');
+        String sql = "INSERT INTO zhulong_t.t_tu (id, mid, `name`, turl, width, `desc`) VALUES (?, ?, ?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        long autoIncId = 0;
+
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+                ps.setLong(1, tu.getId());
+                ps.setLong(2, tu.getMid());
+                ps.setString(3, tu.getName());
+                ps.setString(4, tu.getTurl());
+                ps.setInt(5, tu.getWidth());
+                ps.setString(6, tu.getDesc());
+
+                return ps;
+
+            }
+        },keyHolder
+
+        );
+
+        autoIncId = keyHolder.getKey().intValue();
+
+        return autoIncId;
+
+    }
+
+
 
     private final int pageSize = 1;
     public List<Tmodel> getListByPage(int page){
@@ -101,9 +199,9 @@ public class TService {
 
     private static int nums = 0;
 
-    public int t2(Node node){
+    public TextType t2(Node node){
         //
-        int type = 0;
+        TextType t=null;
 
         //获取子节点
         NodeList nodes = node.getChildren();
@@ -122,28 +220,41 @@ public class TService {
 
                     if ("lazy".equals(tagNode.getAttribute("class"))) {
                         nums++;
-                        System.out.println("is imgs  nums :"+nums);
-                        System.out.println("data-original:" + tagNode.getAttribute("data-original"));
-                        System.out.println("alt :" + tagNode.getAttribute("alt"));
-                        System.out.println("title:" + tagNode.getAttribute("title"));
-                        System.out.println("width:" + tagNode.getAttribute("width"));
 
-                        return type;
+                        t = TextType.FTU;
+                        Map<String,Object> m = new HashMap<String,Object>();
+
+                        m.put("nums",nums);
+                        m.put("turl",tagNode.getAttribute("data-original"));
+                        m.put("alt", tagNode.getAttribute("alt"));
+                        m.put("title",tagNode.getAttribute("title"));
+                        m.put("width", tagNode.getAttribute("width"));
+
+                        t.setM(m);
+
+                        return t;
+
                     } else if (tagNode!=null) {
                         nums++;
-                        System.out.println("is big img");
-                        System.out.println("src:" + tagNode.getAttribute("src"));
-                        System.out.println("alt :" + tagNode.getAttribute("alt"));
-                        System.out.println("title:" + tagNode.getAttribute("title"));
 
-                        return type;
+                        t = TextType.MTU;
+                        Map<String,Object> m = new HashMap<String,Object>();
+
+                        m.put("nums",nums);
+                        m.put("turl",tagNode.getAttribute("src"));
+                        m.put("alt", tagNode.getAttribute("alt"));
+                        m.put("title",tagNode.getAttribute("title"));
+
+                        t.setM(m);
+
+                        return t;
                     }
                 }
 
             }
         }
 
-        return type;
+        return t;
     }
 
     public TextType t1(String cText){
@@ -191,19 +302,27 @@ public class TService {
             t.setContext(cText.replace("图片：","").replace("张",""));
 
         }else {
-            System.out.print("没有设置    "+cText);
+            System.out.print("没有设置  =============================================================  "+cText);
         }
 
         return t;
     }
 
-    public String hp(String content) {
+    public String hp(String content,String title, long id) {
         try{
             Parser parser = new Parser(content);
             NodeFilter filter = new TagNameFilter("p");
             NodeList nodes =  parser.extractAllNodesThatMatch(filter);
 
             if(nodes!=null) {
+                TMain tm = new TMain();
+                tm.settId(id);
+                tm.setTitle(title);
+
+                Ttu tu = new Ttu();
+                tu.setMid(id);
+                tu.setName(title);
+
                 for (int i = 0; i < nodes.size(); i++) {
                     Node textnode = (Node) nodes.elementAt(i);
 
@@ -211,20 +330,67 @@ public class TService {
                     if(p==null){
 
                         String cText = textnode.toPlainTextString().trim();
-                        if(!"".equals(cText)&&i==0){
-
-                        }
 
                         if(!"".equals(cText)){
-                            t1(cText);
+                            TextType ty = t1(cText);
+
+                            if(ty == null)
+                                continue;
+
+                            if (ty.getType() == TextType.SJF.getType()){
+                                tm.setSjf(ty.getContext());
+                            }else if(ty.getType() == TextType.WEIZHI.getType()){
+                                tm.setWeizhi(ty.getContext());
+                            }else if(ty.getType() == TextType.FENLIE.getType()){
+                                tm.setFenlie(ty.getContext());
+                            }else if(ty.getType() == TextType.NEIRONG.getType()){
+                                tm.setNeirong(ty.getContext());
+                            }else if(ty.getType() == TextType.TUPIAN.getType()){
+                                tm.setTupiannum(ty.getContext());
+                            }else if(ty.getType() == TextType.SHEYINSHI.getType()){
+                                tm.setShejishi(ty.getContext());
+                            }else if(ty.getType() == TextType.BIAOQIAN.getType()){
+                                tm.setBiaoqian(ty.getContext());
+                            }else if(ty.getType() == TextType.MIAOSHU.getType()){
+                                tm.setMiaoshu(ty.getContext());
+                            }
+
                         }else {
-                            t2(textnode);
+                            TextType t = t2(textnode);
+                            if(t==null)
+                                continue;
+
+                            if(t.getType() == TextType.MTU.getType() || t.getType() == TextType.FTU.getType()){
+
+                                Map<String,Object>  m = t.getM();
+
+                                // 表崔图片
+                                tu.setTurl(m.get("turl").toString());
+                                tu.setDesc(m.get("title").toString());
+                                tu.setWidth(500);
+
+                                insertTtu(tu);
+
+                            }
+
+                            if(t.getType() == TextType.MTU.getType()){
+
+                                Map<String,Object>  m = t.getM();
+
+                                tm.setTu(m.get("turl").toString());
+                                tm.setTuId(0);
+                                tm.setTudesc(m.get("alt").toString());
+                            }
                         }
 
-                        System.out.println("=================================================");
+                        System.out.println("=====");
                     }
 
                 }
+
+                //biaocun
+                insertTMain(tm);
+
             }
 
         }catch (ParserException pe){
@@ -235,5 +401,18 @@ public class TService {
         }
 
     return "";
+    }
+
+    String baseUrl = "http://photo.zhulong.com/proj/detail";
+    public long getTid(String t2) {
+
+        String tt = t2.replace(".html","").replace(baseUrl,"");
+        if (org.apache.commons.lang3.StringUtils.isNumeric(tt)){
+            return Long.parseLong(tt);
+        }else {
+            return 0;
+        }
+
+
     }
 }
