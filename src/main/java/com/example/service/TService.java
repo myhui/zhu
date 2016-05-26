@@ -44,6 +44,8 @@ import java.util.Map;
 public class TService {
     public static final Logger logger = LoggerFactory.getLogger(TService.class);
 
+    private final int pageSize = 600;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -195,7 +197,7 @@ public class TService {
 
 
 
-    private final int pageSize = 600;
+
     public List<Tmodel> getListByPage(int page){
         int start = (page-1)*pageSize;
         String sql = "SELECT *   FROM zhu LIMIT "+start+","+pageSize;
@@ -340,9 +342,15 @@ public class TService {
             t = TextType.TUPIAN;
             t.setContext(cText.replace("图片：","").replace("张",""));
 
+        }else if(cText.startsWith("安装图酷APP可以免币下载无水印高清大图")){
+
+        }else if(cText.startsWith("成本：")){
+            //todo  chegnben
+        }else if(cText.startsWith("设计团队：")){
+            //todo s
         }else {
             logger.info("没有设置 ， 内容：{}",cText);
-            System.out.print("没有设置=="+cText);
+//            System.out.println("没有设置=="+cText);
         }
 
         return t;
@@ -410,8 +418,8 @@ public class TService {
                                 Map<String,Object>  m = t.getM();
 
                                 // 表崔图片
-                                tu.setTurl(m.get("turl").toString());
-                                tu.setDesc(m.get("title").toString());
+                                tu.setTurl(StringUtils.isEmpty(m.get("turl"))?"":m.get("turl").toString());
+                                tu.setDesc(StringUtils.isEmpty(m.get("title"))?"":m.get("title").toString());
                                 tu.setWidth(500);
 
                                 insertTtu(tu);
@@ -422,9 +430,9 @@ public class TService {
 
                                 Map<String,Object>  m = t.getM();
 
-                                tm.setTu(m.get("turl").toString());
+                                tm.setTu(StringUtils.isEmpty(m.get("turl"))?"":m.get("turl").toString());
                                 tm.setTuId(0);
-                                tm.setTudesc(m.get("alt").toString());
+                                tm.setTudesc(StringUtils.isEmpty(m.get("alt"))?"":m.get("alt").toString());
                             }
                         }
 
@@ -443,8 +451,8 @@ public class TService {
         catch( Exception e ) {
 
             // 133730 , 133918  nullPointer
+            logger.error("错误信息：{}|{}", id, e);
             System.out.println( "Exception:"+e );
-            logger.error("错误信息：{}",e);
         }
 
     return "";

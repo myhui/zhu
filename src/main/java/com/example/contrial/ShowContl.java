@@ -29,10 +29,10 @@ public class ShowContl {
     public String getList(){
         List<Tmodel> tt=tService.getListByPage(1);
         logger.info("into.....");
-//        for(Tmodel t: tt){
-//            long id = tService.getTid(t.getT7());
-//            tService.hp(t.getT5(),t.getT2(),id);
-//        }
+        for(Tmodel t: tt){
+            long id = tService.getTid(t.getT7());
+            tService.hp(t.getT5(),t.getT2(),id);
+        }
 
         return "success";
     }
