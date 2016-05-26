@@ -164,7 +164,7 @@ public class TService {
 
     public long insertTtu(Ttu tu){
         //INSERT INTO zhulong_t.t_mian (id, t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (1, 1, '1', 1, '1', 1, 1, '1', '1', '1', '1', 1, '1', '1', '1', '1', 1, '1');
-        String sql = "INSERT INTO zhulong_t.t_tu (id, mid, `name`, turl, width, `desc`) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO zhulong_t.t_tu (id, mid, `name`, turl, width, `desc`,`t_num`,`title`) VALUES (?, ?, ?, ?, ?, ?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -180,7 +180,20 @@ public class TService {
                 ps.setString(3, tu.getName());
                 ps.setString(4, tu.getTurl());
                 ps.setInt(5, tu.getWidth());
+                if(tu.getDesc()==null){
+                    tu.setDesc("");
+                }
                 ps.setString(6, tu.getDesc());
+
+                Map<String,Object> m =tools.vTuNum(tu.getDesc());
+
+                int tunm = StringUtils.isEmpty(m.get("n"))?0:(int)m.get("n");
+                ps.setInt(7,tunm);
+
+                String tuTitle = StringUtils.isEmpty(m.get("t"))?"":m.get("t").toString();
+
+                ps.setString(8, tuTitle);
+
 
                 return ps;
 
