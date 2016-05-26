@@ -83,9 +83,20 @@ public class TService {
     }
 
     public long updateTMain(TMain main){
-        String sql = "INSERT INTO zhulong_t.t_mian (t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-       String tt = "UPDATE FROM t_mian as m SET m.t_id = ?, m.title = ?, m.hot = ?, m.fbsj = ?, liulan = ? WHERE m.t_id = ?";
-        return updateTMain(main,sql);
+        String sql2 = "INSERT INTO zhulong_t.t_mian (t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+       if(main == null){
+           return 0;
+       }
+        StringBuilder sql = new StringBuilder("UPDATE FROM t_mian as m SET ");
+
+        if(!StringUtils.isEmpty(main.getTitle())){
+            sql.append("m.title = :title,");
+        }
+
+        //"m.title = ?, m.hot = ?, m.fbsj = ?, liulan = ? WHERE m.t_id = ?";
+
+        sql.append(" 1=1 WHERE m.t_id = :tId");
+        return updateTMain(main,sql.toString());
     }
 
 
