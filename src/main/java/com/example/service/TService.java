@@ -19,10 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
@@ -48,6 +47,9 @@ public class TService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     public List<Tmodel> getList(){
         String sql = "SELECT *   FROM zhu";
         return (List<Tmodel>) jdbcTemplate.query(sql, new RowMapper<Tmodel>(){
@@ -68,40 +70,55 @@ public class TService {
         });
     }
 
+    public long getCount(long tId){
+        String sql = "SELECT count(1)   FROM zhu WHERE t_id = ?";
+        return jdbcTemplate.queryForObject(sql,new Object[] {tId },Long.class);
+    }
+
 
     public long insertTMain(TMain main){
         //INSERT INTO zhulong_t.t_mian (id, t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (1, 1, '1', 1, '1', 1, 1, '1', '1', '1', '1', 1, '1', '1', '1', '1', 1, '1');
         String sql = "INSERT INTO zhulong_t.t_mian (t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        return updateTMain(main,sql);
+    }
 
+    public long updateTMain(TMain main){
+        String sql = "INSERT INTO zhulong_t.t_mian (t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+       String tt = "UPDATE FROM t_mian as m SET m.t_id = ?, m.title = ?, m.hot = ?, m.fbsj = ?, liulan = ? WHERE m.t_id = ?";
+        return updateTMain(main,sql);
+    }
+
+
+    private long updateTMain(TMain main, String sql){
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         long autoIncId = 0;
 
         jdbcTemplate.update(new PreparedStatementCreator() {
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+                                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 
-                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                        ps.setLong(1, main.gettId());
-                        ps.setString(2, main.getTitle());
-                        ps.setInt(3, main.getHot());
-                        ps.setString(4, main.getFbsj());
-                        ps.setLong(5, main.getLiulan());
-                        ps.setLong(6, main.getDownloadnum());
-                        ps.setString(7, main.getSjf());
-                        ps.setString(8, main.getWeizhi());
-                        ps.setString(9, main.getFenlie());
-                        ps.setString(10, main.getNeirong());
-                        ps.setString(11, main.getTupiannum());
-                        ps.setString(12, main.getShejishi());
-                        ps.setString(13, main.getBiaoqian());
-                        ps.setString(14, main.getMiaoshu());
-                        ps.setString(15, main.getTu());
-                        ps.setLong(16, main.getTuId());
-                        ps.setString(17, main.getTudesc());
+                                    PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                                    ps.setLong(1, main.gettId());
+                                    ps.setString(2, main.getTitle());
+                                    ps.setInt(3, main.getHot());
+                                    ps.setString(4, main.getFbsj());
+                                    ps.setLong(5, main.getLiulan());
+                                    ps.setLong(6, main.getDownloadnum());
+                                    ps.setString(7, main.getSjf());
+                                    ps.setString(8, main.getWeizhi());
+                                    ps.setString(9, main.getFenlie());
+                                    ps.setString(10, main.getNeirong());
+                                    ps.setString(11, main.getTupiannum());
+                                    ps.setString(12, main.getShejishi());
+                                    ps.setString(13, main.getBiaoqian());
+                                    ps.setString(14, main.getMiaoshu());
+                                    ps.setString(15, main.getTu());
+                                    ps.setLong(16, main.getTuId());
+                                    ps.setString(17, main.getTudesc());
 
-                        return ps;
-                    }
-                },keyHolder
+                                    return ps;
+                                }
+                            },keyHolder
         );
 
         autoIncId = keyHolder.getKey().intValue();
@@ -110,10 +127,18 @@ public class TService {
     }
 
     public long insertAndUpdateTMain(TMain mian){
+        if(mian==null || mian.gettId() < 1){
+            logger.warn("main  tId is null {}",mian.getTitle());
+        }
+        long count =getCount(mian.gettId());
 
-
-        //// TODO: 16/5/25 插入更新
-        return 0;
+        long id = 0;
+        if(count>0){
+            id = updateTMain(mian);
+        }else {
+            id = insertTMain(mian);
+        }
+        return id;
     }
 
 
