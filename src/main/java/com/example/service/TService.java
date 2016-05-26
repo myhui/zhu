@@ -15,6 +15,8 @@ import org.htmlparser.nodes.TagNode;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,6 +43,7 @@ import java.util.Map;
 
 @Service
 public class TService {
+    public static final Logger logger = LoggerFactory.getLogger(TService.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -302,7 +305,8 @@ public class TService {
             t.setContext(cText.replace("图片：","").replace("张",""));
 
         }else {
-            System.out.print("没有设置  =============================================================  "+cText);
+            logger.info("没有设置 ， 内容：{}",cText);
+            System.out.print("没有设置=="+cText);
         }
 
         return t;
@@ -312,7 +316,8 @@ public class TService {
         try{
 
             if(StringUtils.isEmpty(content)){
-                System.out.println("=================content is null="+title+"=="+id);
+                System.out.println("=content is null="+title+"=="+id);
+                logger.info("==context is null,titile  id  {}|{}",title, id);
             }
             Parser parser = new Parser(content);
             NodeFilter filter = new TagNameFilter("p");
@@ -403,6 +408,7 @@ public class TService {
 
             // 133730 , 133918  nullPointer
             System.out.println( "Exception:"+e );
+            logger.error("错误信息：{}",e);
         }
 
     return "";
@@ -412,12 +418,12 @@ public class TService {
     public long getTid(String t2) {
 
         String tt = t2.replace(".html","").replace(baseUrl,"");
-        if (org.apache.commons.lang3.StringUtils.isNumeric(tt)){
+        try {
             return Long.parseLong(tt);
-        }else {
-            return 0;
-        }
+        }catch (Exception e){
 
+        }
+        return 0;
 
     }
 }
