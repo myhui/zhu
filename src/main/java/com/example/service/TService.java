@@ -351,9 +351,11 @@ public class TService {
         }else if(cText.startsWith("安装图酷APP可以免币下载无水印高清大图")){
 
         }else if(cText.startsWith("成本：")){
-            //todo  chegnben
+            t = TextType.CB;
+            t.setContext(cText.replace("成本：",""));
         }else if(cText.startsWith("设计团队：")){
-            //todo s
+            t = TextType.SJTD;
+            t.setContext(cText.replace("设计团队：",""));
         }else if(cText.startsWith("合作建筑师：")){
             t = TextType.HZJZS;
             t.setContext(cText.replace("合作建筑师：",""));
@@ -430,6 +432,8 @@ public class TService {
                             if(ty == null)
                                 continue;
 
+
+
                             if (ty.getType() == TextType.SJF.getType()){
                                 tm.setSjf(ty.getContext());
                             }else if(ty.getType() == TextType.WEIZHI.getType()){
@@ -446,7 +450,36 @@ public class TService {
                                 tm.setBiaoqian(ty.getContext());
                             }else if(ty.getType() == TextType.MIAOSHU.getType()){
                                 tm.setMiaoshu(ty.getContext());
+                            }else if(ty.getType() == TextType.CB.getType()){
+                                tm.setCb(ty.getContext());
                             }
+
+                            else if(ty.getType() == TextType.SJTD.getType()){
+                                tm.setSjtd(ty.getContext());
+                            }else if(ty.getType() == TextType.HZJZS.getType()){
+                                tm.setHzjzs(ty.getContext());
+                            }else if(ty.getType() == TextType.XMHZHB.getType()){
+                                tm.setXmhzhb(ty.getContext());
+                            }else if(ty.getType() == TextType.WJF.getType()){
+                                tm.setWjf(ty.getContext());
+                            }else if(ty.getType() == TextType.TPLY.getType()){
+                                tm.setTply(ty.getContext());
+                            }else if(ty.getType() == TextType.CBF.getType()){
+                                tm.setCbf(ty.getContext());
+                            }else if(ty.getType() == TextType.HZF.getType()){
+                                tm.setCb(ty.getContext());
+                            }else if(ty.getType() == TextType.KFS.getType()){
+                                tm.setKfs(ty.getContext());
+                            }else if(ty.getType() == TextType.HZHB.getType()){
+                                tm.setHzhb(ty.getContext());
+                            }else if(ty.getType() == TextType.JZS.getType()){
+                                tm.setJzs(ty.getContext());
+                            }else if(ty.getType() == TextType.JZGS.getType()){
+                                tm.setJzgs(ty.getContext());
+                            }else if(ty.getType() == TextType.SJS.getType()){
+                                tm.setSjs(ty.getContext());
+                            }
+
 
                         }else {
                             TextType t = t2(textnode);

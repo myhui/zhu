@@ -18,17 +18,19 @@ public enum TextType {
     MIAOSHU(9,"",null),
     MTU(10,"",null),
     HZJZS(11,"",null),
-    FTU(11,"",null),
-    XMHZHB(11,"",null),
-    WJF(11,"",null),
-    TPLY(11,"",null),
-    HZF(11,"",null),
-    CBF(11,"",null),
-    KFS(11,"",null),
-    HZHB(11,"",null),
-    JZS(11,"",null),
-    SJS(11,"",null),
-    JZGS(11,"",null);
+    FTU(12,"",null),
+    XMHZHB(13,"",null),
+    WJF(14,"",null),
+    TPLY(15,"",null),
+    HZF(16,"",null),
+    CBF(17,"",null),
+    KFS(18,"",null),
+    HZHB(19,"",null),
+    JZS(20,"",null),
+    SJS(21,"",null),
+    JZGS(21,"",null),
+    SJTD(22,"",null),
+    CB(21,"",null);
 
 
     TextType(int type, String context, Map<String,Object> m){
