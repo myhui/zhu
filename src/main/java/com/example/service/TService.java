@@ -77,6 +77,22 @@ public class TService {
         return jdbcTemplate.queryForObject(sql,new Object[] {tId },Long.class);
     }
 
+    public long updateTuDnum(long tid, int n){
+        String sql = "UPDATE t_tu SET d_num = ? WHERE id= ?;";
+
+        jdbcTemplate.update(new PreparedStatementCreator() {
+                                public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+
+                                    PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                                    ps.setInt(1, n);
+                                    ps.setLong(2, tid);
+                                    return ps;
+                                }
+                            }
+        );
+        return 0;
+    }
+
 
     public long insertTMain(TMain main){
         //INSERT INTO zhulong_t.t_mian (id, t_id, title, hot, fbsj, liulan, download_num, sjf, weizhi, fenlie, neirong, tu_num, shejishi, biaoqian, miaoshu, tu, tu_id, tu_desc) VALUES (1, 1, '1', 1, '1', 1, 1, '1', '1', '1', '1', 1, '1', '1', '1', '1', 1, '1');
@@ -208,7 +224,59 @@ public class TService {
 
     }
 
+    int dNum = 1;
+    public void downloadImages(int page, int size){
+        List<Ttu> list = getTuListByPage(page,size);
+        for(Ttu t:list){
+            String imgUrl = t.getTurl();
+            String ts = genImagesTitle(t);
 
+            if("".equals(ts)){
+                logger.error("图片下载错误"+t.getId());
+                continue;
+            }
+            boolean isT = writeImg(imgUrl,ts);
+            if (isT){
+                updateTuDnum(t.getId(), dNum);
+            }
+
+        }
+    }
+
+    public String genImagesTitle(Ttu t){
+        String ttt = "";
+        if(t!=null&&t.getId()!=0){
+            ttt=t.getMid()+"\\"+t.getMid()+"_"+t.getId()+"_"+t.gettNum();
+        }
+        return ttt;
+    }
+
+    public List<Ttu> getTuListByPage(int page, int size){
+        if(size == 0){
+            size = pageSize;
+        }
+        int start = (page-1)*size;
+        String sql = "SELECT *   FROM t_tu LIMIT "+start+","+pageSize;
+        return (List<Ttu>) jdbcTemplate.query(sql, new RowMapper<Ttu>(){
+
+            @Override
+            public Ttu mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Ttu stu = new Ttu();
+                stu.setId(rs.getLong("id"));
+                stu.setMid(rs.getLong("mid"));
+                stu.setName(rs.getString("name"));
+                stu.setTurl(rs.getString("turl"));
+                stu.setWidth(rs.getInt("width"));
+                stu.setDesc(rs.getString("desc"));
+                stu.setTitle(rs.getString("title"));
+                stu.settNum(rs.getInt("t_num"));
+                stu.setdNum(rs.getInt("d_num"));
+
+                return stu;
+            }
+
+        });
+    }
 
 
     public List<Tmodel> getListByPage(int page, int size){
@@ -546,7 +614,7 @@ public class TService {
 
     public static final String imgPath="E:\\Test";
 
-    public static void writeImg(String imgUrl, String imgTitle){
+    public static boolean writeImg(String imgUrl, String imgTitle){
 
 
 
@@ -558,9 +626,15 @@ public class TService {
             }
             String path = imgPath+"\\"+imgTitle+"."+ex_name;
 
+            File ifile = new File(path);
+            if(ifile.exists()){
+                logger.warn("图片已存在："+path);
+                return false;
+            }
+            tools.createDir(imgPath+"\\"+imgTitle);
             URL url = new URL(imgUrl);
             image = ImageIO.read(url);
-            File ifile = new File(path);
+
 
             File dirFile = new File(imgPath);
             if(!dirFile.exists()){
@@ -573,8 +647,9 @@ public class TService {
 
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
-        System.out.println("Done");
+        return true;
     }
 
     public String getBx(String imgUrl){
@@ -587,7 +662,8 @@ public class TService {
     }
 
     public static void main(String[] args) {
-        String tt = tools.getExtensionNameForPath("http://static.zhulong.com/photo/small/201603/04/143740itqhnxgcanckxr1v_0_0_560_w_0.jpg");
+        String tt = tools.createDir("http://static.zhulong.com/photo/small/201603/04/143740itqhnxgcanckxr1v_0_0_560_w_0.jpg");
+
         System.out.print(tt);
     }
 

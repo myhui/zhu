@@ -12,7 +12,34 @@ public class Ttu {
     private String turl;
     private int width;
     private String desc;
+    private String title;
+    private int tNum;
+    private int dNum;
 
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int gettNum() {
+        return tNum;
+    }
+
+    public void settNum(int tNum) {
+        this.tNum = tNum;
+    }
+
+    public int getdNum() {
+        return dNum;
+    }
+
+    public void setdNum(int dNum) {
+        this.dNum = dNum;
+    }
 
     public long getId() {
         return id;

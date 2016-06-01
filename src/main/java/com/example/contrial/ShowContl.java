@@ -42,5 +42,15 @@ public class ShowContl {
     }
 
 
+    @RequestMapping("/dimg")
+    @ResponseBody
+    public String dimg(@RequestParam(value = "page" , defaultValue = "1") int page,
+                          @RequestParam(value = "size", defaultValue = "0")int size,
+                          HttpServletRequest request){
+        tService.downloadImages(page, size);
+        return "success";
+    }
+
+
 
 }

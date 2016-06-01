@@ -2,6 +2,7 @@ package com.example.service;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -85,6 +86,35 @@ public class tools {
             }
         }
         return filepath;
+    }
+
+
+    /**
+     * 从路径获取文件名
+     * @param filepath
+     * @return
+     */
+    public static String getDir(String filepath) {
+        if ((filepath != null) && (filepath.length() > 0)) {
+            int dot = filepath.lastIndexOf('\\');
+            if ((dot >-1) && (dot < (filepath.length() - 1))) {
+                return filepath.substring(0,dot);
+            }
+        }
+        return "";
+    }
+
+    public static String createDir(String filepath){
+        String p = getDir(filepath);
+        if("".equals(p)){
+            return "";
+        }
+        File f = new File(p);
+        if(!f.exists()){
+            f.mkdir();
+        }
+        return "1";
+
     }
 
     public static String getExtensionNameForPath(String filepath){
