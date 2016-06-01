@@ -17,7 +17,18 @@ public enum TextType {
     BIAOQIAN(8,"",null),
     MIAOSHU(9,"",null),
     MTU(10,"",null),
-    FTU(11,"",null);
+    HZJZS(11,"",null),
+    FTU(11,"",null),
+    XMHZHB(11,"",null),
+    WJF(11,"",null),
+    TPLY(11,"",null),
+    HZF(11,"",null),
+    CBF(11,"",null),
+    KFS(11,"",null),
+    HZHB(11,"",null),
+    JZS(11,"",null),
+    SJS(11,"",null),
+    JZGS(11,"",null);
 
 
     TextType(int type, String context, Map<String,Object> m){

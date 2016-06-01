@@ -27,10 +27,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +44,7 @@ import java.util.Map;
 public class TService {
     public static final Logger logger = LoggerFactory.getLogger(TService.class);
 
-    private final int pageSize = 600;
+    private final int pageSize = 100;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -211,7 +211,8 @@ public class TService {
 
 
 
-    public List<Tmodel> getListByPage(int page){
+    public List<Tmodel> getListByPage(int page, int size){
+
         int start = (page-1)*pageSize;
         String sql = "SELECT *   FROM zhu LIMIT "+start+","+pageSize;
         return (List<Tmodel>) jdbcTemplate.query(sql, new RowMapper<Tmodel>(){
@@ -316,42 +317,34 @@ public class TService {
         TextType t=null;
 
         if(cText.startsWith("设计方：")){
-//            System.out.println("is 设计方。");
             t = TextType.SJF;
             t.setContext(cText.replace("设计方：",""));
 
         }else if(cText.startsWith("位置：")){
-//            System.out.println("is 位置。");
             t = TextType.WEIZHI;
             t.setContext(cText.replace("位置：",""));
 
         }else if(cText.startsWith("分类：")){
-//            System.out.println("is 分类。");
             t = TextType.FENLIE;
             t.setContext(cText.replace("分类：",""));
 
         }else if(cText.startsWith("内容：")){
-//            System.out.println("is 内容。");
             t = TextType.NEIRONG;
             t.setContext(cText.replace("内容：",""));
 
         }else if(cText.startsWith("摄影师：")){
-//            System.out.println("is 摄影师。");
             t = TextType.SHEYINSHI;
             t.setContext(cText.replace("摄影师：",""));
 
         }else if(cText.startsWith("标签：")){
-//            System.out.println("is 标签。");
             t = TextType.BIAOQIAN;
             t.setContext(cText.replace("标签：",""));
 
         }else if(cText.length()> 50){
-//            System.out.println(" is Content");
             t = TextType.MIAOSHU;
             t.setContext(cText);
 
         }else if(cText.startsWith("图片：")){
-//            System.out.println("is picture");
             t = TextType.TUPIAN;
             t.setContext(cText.replace("图片：","").replace("张",""));
 
@@ -361,9 +354,41 @@ public class TService {
             //todo  chegnben
         }else if(cText.startsWith("设计团队：")){
             //todo s
+        }else if(cText.startsWith("合作建筑师：")){
+            t = TextType.HZJZS;
+            t.setContext(cText.replace("合作建筑师：",""));
+        } else if(cText.startsWith("项目合作伙伴：")){
+            t = TextType.XMHZHB;
+            t.setContext(cText.replace("项目合作伙伴：",""));
+        }else if(cText.startsWith("委托方：")){
+            t = TextType.WJF;
+            t.setContext(cText.replace("委托方：",""));
+        }else if(cText.startsWith("图片来源：")){
+            t = TextType.TPLY;
+            t.setContext(cText.replace("图片来源：",""));
+        }else if(cText.startsWith("合作方：")){
+            t = TextType.HZF;
+            t.setContext(cText.replace("合作方：",""));
+        }else if(cText.startsWith("承包方：")){
+            t = TextType.CBF;
+            t.setContext(cText.replace("承包方：",""));
+        }else if(cText.startsWith("开发商：")){
+            t = TextType.KFS;
+            t.setContext(cText.replace("开发商：",""));
+        }else if(cText.startsWith("项目合作伙伴：")){
+            t = TextType.HZHB;
+            t.setContext(cText.replace("项目合作伙伴：",""));
+        }else if(cText.startsWith("建筑师：")) {
+            t = TextType.JZS;
+            t.setContext(cText.replace("建筑师：", ""));
+        }else if(cText.startsWith("设计师：")){
+            t = TextType.SJS;
+            t.setContext(cText.replace("设计师：",""));
+        }else if(cText.startsWith("建筑公司：")){
+            t = TextType.JZGS;
+            t.setContext(cText.replace("建筑公司：",""));
         }else {
             logger.info("没有设置 ， 内容：{}",cText);
-//            System.out.println("没有设置=="+cText);
         }
 
         return t;
@@ -384,10 +409,12 @@ public class TService {
                 TMain tm = new TMain();
                 tm.settId(id);
                 tm.setTitle(title);
+//                tm.setHot();
 
                 Ttu tu = new Ttu();
                 tu.setMid(id);
                 tu.setName(title);
+
 
                 for (int i = 0; i < nodes.size(); i++) {
                     Node textnode = (Node) nodes.elementAt(i);
@@ -483,4 +510,52 @@ public class TService {
         return 0;
 
     }
+
+    public static final String imgPath="E:\\Test";
+
+    public static void writeImg(String imgUrl, String imgTitle){
+
+
+
+        BufferedImage image = null;
+        try {
+            String ex_name = tools.getExtensionNameForPath(imgUrl);
+            if(ex_name==null || "".equals(ex_name)){
+                ex_name = "jpg";
+            }
+            String path = imgPath+"\\"+imgTitle+"."+ex_name;
+
+            URL url = new URL(imgUrl);
+            image = ImageIO.read(url);
+            File ifile = new File(path);
+
+            File dirFile = new File(imgPath);
+            if(!dirFile.exists()){
+                dirFile.mkdir();
+            }
+
+            ImageIO.write(image, ex_name, ifile);
+//            ImageIO.write(image, "gif", new File("E:\\Test\\classicplus.gif"));
+//            ImageIO.write(image, "png", new File("E:\\Test\\classicplus.png"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Done");
+    }
+
+    public String getBx(String imgUrl){
+        String bx="";
+        if(imgUrl.length()>4){
+
+        }
+
+        return bx;
+    }
+
+    public static void main(String[] args) {
+        String tt = tools.getExtensionNameForPath("http://static.zhulong.com/photo/small/201603/04/143740itqhnxgcanckxr1v_0_0_560_w_0.jpg");
+        System.out.print(tt);
+    }
+
 }

@@ -55,6 +55,58 @@ public class tools {
 
         return m;
     }
+
+    /*
+ * Java文件操作 获取文件扩展名
+ *
+ *  Created on: 2011-8-2
+ *      Author: blueeagle
+ */
+    public static String getExtensionName(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot >-1) && (dot < (filename.length() - 1))) {
+                return filename.substring(dot + 1);
+            }
+        }
+        return filename;
+    }
+
+    /**
+     * 从路径获取文件名
+     * @param filepath
+     * @return
+     */
+    public static String getFileName(String filepath) {
+        if ((filepath != null) && (filepath.length() > 0)) {
+            int dot = filepath.lastIndexOf('/');
+            if ((dot >-1) && (dot < (filepath.length() - 1))) {
+                return filepath.substring(dot + 1);
+            }
+        }
+        return filepath;
+    }
+
+    public static String getExtensionNameForPath(String filepath){
+        return getExtensionName(getFileName(filepath));
+    }
+
+    /*
+     * Java文件操作 获取不带扩展名的文件名
+     *
+     *  Created on: 2011-8-2
+     *      Author: blueeagle
+     */
+    public static String getFileNameNoEx(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot >-1) && (dot < (filename.length()))) {
+                return filename.substring(0, dot);
+            }
+        }
+        return filename;
+    }
+
 }
 
 
